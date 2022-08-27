@@ -111,7 +111,8 @@ public class DemoApplication {
 		case "3":  MT1.UserHeader = secondString; // User header  // cant find a mapping
 			break;
 		case "4": // Text block 
-			//String newLine = secondString.substring(0,secondString.indexOf(':')); // skip			
+			//String newLine = secondString.substring(0,secondString.indexOf(':')); // skip		
+			MT1.TextBlock = new MT103TextBlock();
 			processTextBlock(secondString.substring(secondString.indexOf(':')+1));
 			break;
 		case "5":  MT1.trailers = secondString; // Trailer  // cant find a mapping
@@ -132,66 +133,109 @@ public class DemoApplication {
 		return currentString.substring(currentString.indexOf(':')+1);	
 	}
 	private void processTextBlock(String secondString)
-	{
-		//System.out.println("ProcessText");
-		//System.out.println(secondString);
-		String balance = secondString;//secondString.substring(secondString.indexOf(':')+1);
+	{		
+		String balance = secondString;
 		if(balance.indexOf(':')<0)  return;		
-		//System.out.println(newLine);		
-		//System.out.println(balance);		
-		//String firstString = balance.substring(0,balance.indexOf(':'));
-		String KeyString =  getNext(balance);
-		//System.out.println(firstString);
+		String KeyString =  getNext(balance);	
 		balance = UpdateBalance(balance);
-		//System.out.println(balance);
 		String value= getNext(balance);
-		//if(balance.indexOf(':')>0) 
-		// value = balance.substring(0, balance.indexOf(':'));	
-		//else
-		//	value= balance;
-		//System.out.println(value);
-		//if(balance.indexOf(':')<0) 
-		//	balance="";
-		//else
-		//	balance = balance.substring(balance.indexOf(':')+1);
-		//
-		switch(KeyString) {
-		case "13C": break;// cant find mapping	
-		case "20":  
-			MX1.PmtId_InstrId = value; break; // Transaction Reference Number
-		case "23B": 
-			MX1.PmtTpInf_LclInstrm_Prtry = value; break; //Bank Operation Code
-		case "32A": break; //Value Date / Currency / Interbank Settled
-		case "33B": 
-			MX1.IntrBkSttlmAmt = GetDecimal(value); break; //EUR preceeds need to remove it. Currency / Original Ordered Amount
-		case "50A":
+	
+		switch(KeyString) {		
+		case "20":  //16x Mandatory // Transaction Reference Number Sender's Reference
+			MX1.PmtId_InstrId = value;
+			MT1.TextBlock.t_20 =  value;
+			break; 
+			
+		case "13C": // /8c/4!n1!x4!n // Time Indication
+			break;// cant find mapping
+			
+		case "23B": //4!c Mandatory //Bank Operation Code
+			MX1.PmtTpInf_LclInstrm_Prtry = value;
+			MT1.TextBlock.t_23B =  value;
+			break;
+			
+		case "23E": //4!c[/30x] //Instruction Code
+			break;
+		
+		case "26T": //3!c //Transaction Type Code
+			break;
+			
+		case "32A": //6!n3!a15d Mandatory  //Value Date/Currency/Interbank Settled Amount
+			MT1.TextBlock.t_32A =  value;
+			// To Do find out the mapping field. 
+			break; 
+			
+		case "33B": //3!a15d Currency/Instructed Amount
+			MX1.IntrBkSttlmAmt = GetDecimal(value); //EUR preceeds need to remove it. Currency / Original Ordered Amount
+			break; 
+		
+		case "36": //12d //Exchange Rate
+			break;
+			
+		case "50A": // A, F, or K Mandatory //Ordering Customer
 		case "50F":
-		case "50K": 
+		case "50K":
+		 MT1.TextBlock.t_50a =  value;
 		 MX1.Dbtr_Nm = GetSecondLine(value); //50A, F or K Ordering Customer (Payer)
 		 MX1.Dbtr_PstlAdr_AdrLine = GetThirdLine(value);  
 		 MX1.DbtrAcct_Id_Othr_Id = GetFirstLine(value);   
 		 break;
-		case "52A":
-		case "52D":break; //Ordering Institution (Payer's Bank)
-		case "54A": //Sender's Correspondent (Bank)
+		
+		case "51A": //[/1!a][/34x]4!a2!a2!c[3!c] //Sending Institution
+			break; 
+		
+		case "52A": // A or D //Ordering Institution (Payer's Bank)
+		case "52D":
+			break; 
+		
+		case "53A": // A, B, or D //Sender's Correspondent
+		case "53B":	
+		case "53D":
+			break; 
+			
+		case "54A": //A, B, or D //Receiver's Correspondent
 		case "54B":
-		case "54D":break;	
-		case "56A": //Intermediary (Bank)
+		case "54D":
+			break;
+			
+		case "56A": //A, C, or D //Intermediary Institution
 		case "56C":
-		case "56D":break;
-		case "57A": //Account with Institution (Beneficiary's Bank)
+		case "56D":
+			break;
+			
+		case "57A": //A, B, C, or D//Account with Institution (Beneficiary's Bank)
 		case "57B":
 		case "57C":
-		case "57D":break;
-		case "59": //Beneficiary
-		case "59A": 
+		case "57D":
+			break;
+		
+		case "59": //No letter option, A, or F Mandatory //Beneficiary Customer
+		case "59A":
+		case "59F":
+		 MT1.TextBlock.t_59a =  value;
 		 MX1.Cdtr_Nm = GetSecondLine(value);  
 		 MX1.CdtrAcct_Id_Othr_Id = GetFirstLine(value);   
 		 break;
-		case "70":break; //Remittance Information (Payment Reference)
-		case "71A":break; //Details of Charges (BEN / OUR / SHA)
-		case "72":break; //Sender to Receiver Information
-		case "77B":break; //Regulatory Reporting
+		 
+		case "70": //4*35x //Remittance Information (Payment Reference)
+			break; 
+			
+		case "71A": //3!a Mandatory //Details of Charges (BEN / OUR / SHA)
+			MT1.TextBlock.t_71A =  value;
+			// To Do find out the mapping field. 
+			break; 
+		
+		case "71F": //3!a15d //Sender's Charges
+			break; 
+			
+		case "71G": //3!a15d //Receiver's Charges
+			break; 
+			
+		case "72": //6*35x //Sender to Receiver Information
+			break; 
+			
+		case "77B": //3*35x //Regulatory Reporting
+			break; 
 		};
 		
 		if(balance.length()>0){			
@@ -234,7 +278,16 @@ public class DemoApplication {
 		String ApplicationHeader;
 		String UserHeader;
 		String trailers;
-		
+		MT103TextBlock TextBlock;		
+	}
+	private class MT103TextBlock
+	{
+		String t_20; //Mandatory
+		String t_23B; //Mandatory
+		String t_32A; //Mandatory
+		String t_50a; //Mandatory
+		String t_59a; //Mandatory
+		String t_71A; //Mandatory
 	}
 	public void validation()
 	{
