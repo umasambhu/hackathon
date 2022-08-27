@@ -1,0 +1,42 @@
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Document>
+    <FIToFICstmrCdtTrf>
+        <CdtTrfTxInf>
+            <PmtId>
+                <InstrId>UNIQUEREFOFTRX16</InstrId>
+            </PmtId>
+            <PmtTpInf>
+                <LclInstrm>
+                    <Prtry>CRED</Prtry>
+                </LclInstrm>
+            </PmtTpInf>
+            <IntrBkSttlmAmt>735927</IntrBkSttlmAmt>
+            <Dbtr>
+                <Nm>DEUTDEFF</Nm>
+                <PstlAdr>
+                    <AdrLine>TYUTYG,BEG</AdrLine>
+                    <AdrLine>
+PORTO</AdrLine>
+                </PstlAdr>
+            </Dbtr>
+            <DbtrAcct>
+                <Id>
+                    <Othr>
+                        <Id>/DE37500700100950596700</Id>
+                    </Othr>
+                </Id>
+            </DbtrAcct>
+            <Cdtr>
+                <Nm>CHARLES DUPONT COMPANY</Nm>
+            </Cdtr>
+            <CdtrAcct>
+                <Id>
+                    <Othr>
+                        <Id>/FR7630003034950005005419318</Id>
+                    </Othr>
+                </Id>
+            </CdtrAcct>
+        </CdtTrfTxInf>
+    </FIToFICstmrCdtTrf>
+</Document>

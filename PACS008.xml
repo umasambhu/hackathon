@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Document>
+    <FIToFICstmrCdtTrf>
+        <CdtTrfTxInf>
+            <PmtId>
+                <InstrId>0061350113089908</InstrId>
+            </PmtId>
+            <PmtTpInf>
+                <LclInstrm>
+                    <Prtry>CRED</Prtry>
+                </LclInstrm>
+            </PmtTpInf>
+            <IntrBkSttlmAmt>100000</IntrBkSttlmAmt>
+            <Dbtr>
+                <Nm>AGENTES DE BOLSA FOO AGENCIA</Nm>
+                <PstlAdr>
+                    <AdrLine>AV XXXXX 123 BIS 9 PL
+12345 BARCELONA</AdrLine>
+                </PstlAdr>
+            </Dbtr>
+            <DbtrAcct>
+                <Id>
+                    <Othr>
+                        <Id>/12345678</Id>
+                    </Othr>
+                </Id>
+            </DbtrAcct>
+            <Cdtr>
+                <Nm>FOO AGENTES DE BOLSA ASOC</Nm>
+            </Cdtr>
+            <CdtrAcct>
+                <Id>
+                    <Othr>
+                        <Id>/ES0123456789012345671234</Id>
+                    </Othr>
+                </Id>
+            </CdtrAcct>
+        </CdtTrfTxInf>
+    </FIToFICstmrCdtTrf>
+</Document>
