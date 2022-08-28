@@ -49,7 +49,7 @@ public class DemoApplication {
 	@GetMapping("/convert")
 	public void convert()
 	{
-	      System.out.println("reading from file.");
+	    System.out.println("reading from file.");
 		readFile();
 		if(data == null)
 		{
@@ -95,18 +95,8 @@ public class DemoApplication {
 		//print all MX1 values.
 		//PmtId_InstrId,PmtTpInf_LclInstrm_Prtry,IntrBkSttlmAmt,Dbtr_Nm,Dbtr_PstlAdr_AdrLine,DbtrAcct_Id_Othr_Id;
 		//String Cdtr_Nm, CdtrAcct_Id_Othr_Id;
-	      System.out.println("Write.");
-	      validations();
-		System.out.println("PmtId_InstrId : " + MX1.PmtId_InstrId );
-		System.out.println("PmtTpInf_LclInstrm_Prtry : " + MX1.PmtTpInf_LclInstrm_Prtry );
-		System.out.println("IntrBkSttlmAmt : " + MX1.IntrBkSttlmAmt );
-		System.out.println("Dbtr_Nm : " + MX1.Dbtr_Nm );
-		System.out.println("Dbtr_PstlAdr_AdrLine : " + MX1.Dbtr_PstlAdr_AdrLine );
-		System.out.println("DbtrAcct_Id_Othr_Id : " + MX1.DbtrAcct_Id_Othr_Id );
-		System.out.println("Cdtr_Nm : " + MX1.Cdtr_Nm );
-		System.out.println("CdtrAcct_Id_Othr_Id : " + MX1.CdtrAcct_Id_Othr_Id );
-		WriteXML();
 	}
+	
 	MXformat MX1 = new MXformat();
 	MT103Format MT1 = new MT103Format();
 	private void mapping(String currentString)
@@ -402,4 +392,20 @@ public class DemoApplication {
 	      }
 		
 	}	
+	@GetMapping("/validateAndWrite")
+	public void validateAndWrite()
+	{
+		convert();
+	      System.out.println("Validate and Write.");
+	      validations();
+		System.out.println("PmtId_InstrId : " + MX1.PmtId_InstrId );
+		System.out.println("PmtTpInf_LclInstrm_Prtry : " + MX1.PmtTpInf_LclInstrm_Prtry );
+		System.out.println("IntrBkSttlmAmt : " + MX1.IntrBkSttlmAmt );
+		System.out.println("Dbtr_Nm : " + MX1.Dbtr_Nm );
+		System.out.println("Dbtr_PstlAdr_AdrLine : " + MX1.Dbtr_PstlAdr_AdrLine );
+		System.out.println("DbtrAcct_Id_Othr_Id : " + MX1.DbtrAcct_Id_Othr_Id );
+		System.out.println("Cdtr_Nm : " + MX1.Cdtr_Nm );
+		System.out.println("CdtrAcct_Id_Othr_Id : " + MX1.CdtrAcct_Id_Othr_Id );
+		WriteXML();
+	}
 }
