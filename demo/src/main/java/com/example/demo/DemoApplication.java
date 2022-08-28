@@ -1,10 +1,27 @@
 package com.example.demo;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
 
 @SpringBootApplication
 @RestController
@@ -13,51 +30,50 @@ public class DemoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
 	}
-	
+	String data = new String();
+	@GetMapping("/readData")
+	public void readFile()
+	{	
+	try {
+		String filename ="input.txt";
+	      File myObj = new File(filename);
+	      Scanner myReader = new Scanner(myObj);
+	      while (myReader.hasNextLine()) {
+	       String data1 = myReader.nextLine();
+	       if(data.length()<=0) 
+	    	   {data=data1;}
+	       else     {data = data.concat("\n"+ data1);}	
+	       System.out.println(data);
+	      }
+	     
+	      myReader.close();
+	    } catch (FileNotFoundException e) {
+	      System.out.println("An error occurred.");
+	      e.printStackTrace();
+	    }
+	}
 	@GetMapping("/convert")
 	public void convert()
 	{
-		/*try {
-			String filename ="MT103.txt";
-		      File myObj = new File(filename);
-		      Scanner myReader = new Scanner(myObj);
-		      while (myReader.hasNextLine()) {
-		        String data = myReader.nextLine();
-		        System.out.println(data);
-		      }
-		      myReader.close();
-		    } catch (FileNotFoundException e) {
+	      System.out.println("reading from file.");
+		readFile();
+		if(data == null)
+		{
 		      System.out.println("An error occurred.");
-		      e.printStackTrace();
-		    }*/
-		String data = "{1:F01BICFOOYYAXXX8683497519}{2:O1031535051028ESPBESMMAXXX54237522470510281535N}{3:{113:ROMF}{108:0510280182794665}{119:STP}}{4:\n"
-				+ ":20:0061350113089908\n"
-				+ ":13C:/RNCTIME/1534+0000\n"
-				+ ":23B:CRED\n"
-				+ ":23E:SDVA\n"
-				+ ":32A:061028EUR100000,\n"
-				+ ":33A:081029EUR120000,\n"
-				+ ":33B:EUR100000,\n"
-				+ ":50K:/12345678\n"
-				+ "AGENTES DE BOLSA FOO AGENCIA\n"
-				+ "AV XXXXX 123 BIS 9 PL\n"
-				+ "12345 BARCELONA\n"
-				+ ":52A:/2337\n"
-				+ "FOOAESMMXXX\n"
-				+ ":53A:FOOAESMMXXX\n"
-				+ ":57A:BICFOOYYXXX\n"
-				+ ":59:/ES0123456789012345671234\n"
-				+ "FOO AGENTES DE BOLSA ASOC\n"
-				+ ":71A:OUR\n"
-				+ ":72:/BNF/TRANSF. BCO. FOO\n"
-				+ "-}{5:{MAC:88B4F929}{CHK:22EF370A4073}}";
-				
+			return;
+		}
+	      System.out.println("parsing");
 		int count = data.length();
+		if(count<=0) 
+			{
+			System.out.println("data empty"); 
+			return;
+			}
 		StringBuilder extracted = new StringBuilder();
 		int flagAppend = 0;
 		for(int i =0;i<count;i++)
 		{
-			//System.out.print(data.charAt(i));
+			System.out.print(data.charAt(i));
 			char c = data.charAt(i);
 			switch(c)
 			{
@@ -76,8 +92,8 @@ public class DemoApplication {
 			}
 			if(flagAppend == 0)
 			{
-				//System.out.println("new line");
-				//System.out.println(extracted.toString());
+				System.out.println("new line");
+				System.out.println(extracted.toString());
 				mapping(extracted.toString());
 				extracted= new StringBuilder();
 			}
@@ -85,6 +101,7 @@ public class DemoApplication {
 		//print all MX1 values.
 		//PmtId_InstrId,PmtTpInf_LclInstrm_Prtry,IntrBkSttlmAmt,Dbtr_Nm,Dbtr_PstlAdr_AdrLine,DbtrAcct_Id_Othr_Id;
 		//String Cdtr_Nm, CdtrAcct_Id_Othr_Id;
+	      System.out.println("Write.");
 		System.out.println("PmtId_InstrId : " + MX1.PmtId_InstrId );
 		System.out.println("PmtTpInf_LclInstrm_Prtry : " + MX1.PmtTpInf_LclInstrm_Prtry );
 		System.out.println("IntrBkSttlmAmt : " + MX1.IntrBkSttlmAmt );
@@ -93,7 +110,7 @@ public class DemoApplication {
 		System.out.println("DbtrAcct_Id_Othr_Id : " + MX1.DbtrAcct_Id_Othr_Id );
 		System.out.println("Cdtr_Nm : " + MX1.Cdtr_Nm );
 		System.out.println("CdtrAcct_Id_Othr_Id : " + MX1.CdtrAcct_Id_Othr_Id );
-		
+		WriteXML();
 	}
 	MXformat MX1 = new MXformat();
 	MT103Format MT1 = new MT103Format();
@@ -294,4 +311,92 @@ public class DemoApplication {
 		//https://www.paiementor.com/swift-mt-message-block-1-basic-header-description/
 		
 	}
+	Document doc;
+	private Element addChild(Element parent, String ChildName)
+	{
+		Element Child = doc.createElement(ChildName);
+		parent.appendChild(Child);
+		return Child;
+	}
+	private void addChildWithValue(Element parent, String ChildName, String Value)
+	{
+		Element Child = addChild(parent, ChildName);
+		Child.appendChild(doc.createTextNode(Value));
+		//return Child;
+	}
+	@GetMapping("/write")
+	public void WriteXML() 
+	{
+		try {
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			doc = (Document) dBuilder.newDocument();
+		
+		 // root element
+        Element rootElement = doc.createElement("Document");
+        doc.appendChild(rootElement);
+        
+        Element firstChild = addChild(rootElement,"FIToFICstmrCdtTrf");
+        Element firstGChild = addChild(firstChild,"CdtTrfTxInf");
+        
+        Element firstGGChild = addChild(firstGChild,"PmtId");
+        //Element firstGGGChild = 
+        addChildWithValue(firstGGChild,"InstrId",MX1.PmtId_InstrId);
+      //  System.out.println("PmtId_InstrId : " + MX1.PmtId_InstrId );
+        
+        Element SecondGGChild = addChild(firstGChild,"PmtTpInf");
+        Element SecondGGGChild = addChild(SecondGGChild,"LclInstrm");
+        //Element SecondGGGGChild = 
+        addChildWithValue(SecondGGGChild,"Prtry",MX1.PmtTpInf_LclInstrm_Prtry);
+        //	System.out.println("PmtTpInf_LclInstrm_Prtry : " + MX1.PmtTpInf_LclInstrm_Prtry );
+		
+        //Element ThirdGGChild = 
+        addChildWithValue(firstGChild,"IntrBkSttlmAmt", String.valueOf((int)MX1.IntrBkSttlmAmt));
+        //System.out.println("IntrBkSttlmAmt : " + MX1.IntrBkSttlmAmt );
+        
+        Element forthGGChild = addChild(firstGChild,"Dbtr");
+        //Element forthGGGChild = 
+        addChildWithValue(forthGGChild,"Nm",MX1.Dbtr_Nm);
+		//System.out.println("Dbtr_Nm : " + MX1.Dbtr_Nm );
+        Element forthGGGChild2 = addChild(forthGGChild,"PstlAdr");
+        //Element forthGGGGChild2 = 
+        addChildWithValue(forthGGGChild2,"AdrLine",MX1.Dbtr_PstlAdr_AdrLine);        
+	//	System.out.println("Dbtr_PstlAdr_AdrLine : " + MX1.Dbtr_PstlAdr_AdrLine );
+        
+        Element fifthGGChild = addChild(firstGChild,"DbtrAcct");
+        Element fifthGGGChild = addChild(fifthGGChild,"Id");
+        Element fifthGGGGChild = addChild(fifthGGGChild,"Othr");
+        //Element fifthGGGGGChild = 
+        addChildWithValue(fifthGGGGChild,"Id",MX1.DbtrAcct_Id_Othr_Id);
+	//	System.out.println("DbtrAcct_Id_Othr_Id : " + MX1.DbtrAcct_Id_Othr_Id );
+        
+        Element sixthGGChild = addChild(firstGChild,"Cdtr");
+        //Element sixthGGGChild = 
+        addChildWithValue(sixthGGChild,"Nm",MX1.Cdtr_Nm);
+	//	System.out.println("Cdtr_Nm : " + MX1.Cdtr_Nm );
+        
+        Element seventhGGChild = addChild(firstGChild,"CdtrAcct");
+        Element seventhGGGChild = addChild(seventhGGChild,"Id");
+        Element seventhGGGGChild = addChild(seventhGGGChild,"Othr");
+        //Element fifthGGGGGChild = 
+        addChildWithValue(seventhGGGGChild,"Id",MX1.CdtrAcct_Id_Othr_Id);
+        
+	//	System.out.println("CdtrAcct_Id_Othr_Id : " + MX1.CdtrAcct_Id_Othr_Id );
+        
+        // write the content into xml file
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer = transformerFactory.newTransformer();
+        DOMSource source = new DOMSource(doc);
+        StreamResult result = new StreamResult(new File("output.xml"));
+        transformer.transform(source, result);
+        
+        // Output to console for testing
+        StreamResult consoleResult = new StreamResult(System.out);
+        transformer.transform(source, consoleResult);
+        
+		}catch (Exception e) {
+	         e.printStackTrace();
+	      }
+		
+	}	
 }
