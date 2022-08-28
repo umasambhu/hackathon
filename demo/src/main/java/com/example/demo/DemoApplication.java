@@ -2,25 +2,19 @@ package com.example.demo;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Scanner;
 
 @SpringBootApplication
@@ -102,6 +96,7 @@ public class DemoApplication {
 		//PmtId_InstrId,PmtTpInf_LclInstrm_Prtry,IntrBkSttlmAmt,Dbtr_Nm,Dbtr_PstlAdr_AdrLine,DbtrAcct_Id_Othr_Id;
 		//String Cdtr_Nm, CdtrAcct_Id_Othr_Id;
 	      System.out.println("Write.");
+	      validations();
 		System.out.println("PmtId_InstrId : " + MX1.PmtId_InstrId );
 		System.out.println("PmtTpInf_LclInstrm_Prtry : " + MX1.PmtTpInf_LclInstrm_Prtry );
 		System.out.println("IntrBkSttlmAmt : " + MX1.IntrBkSttlmAmt );
@@ -306,11 +301,19 @@ public class DemoApplication {
 		String t_59a; //Mandatory
 		String t_71A; //Mandatory
 	}
-	public void validation()
+	public void validations()
 	{
 		//https://www.paiementor.com/swift-mt-message-block-1-basic-header-description/
-		
+		// null checks.
+		if (MT1.basicHeader == null)  System.out.println("Basic Header Missing");
+		if (MT1.TextBlock.t_20 == null)  System.out.println("Transaction Reference Number Sender's Reference Missing");
+		if (MT1.TextBlock.t_23B == null)  System.out.println("Bank Operation Code Missing");
+		if (MT1.TextBlock.t_32A == null)  System.out.println("Value Date/Currency/Interbank Settled Amount Missing");
+		if (MT1.TextBlock.t_50a == null)  System.out.println("Ordering Customer Missing");
+		if (MT1.TextBlock.t_59a == null)  System.out.println("Beneficiary Customer Missing");
+		if (MT1.TextBlock.t_71A == null)  System.out.println("Details of Charges (BEN / OUR / SHA) Missing");
 	}
+	
 	Document doc;
 	private Element addChild(Element parent, String ChildName)
 	{
