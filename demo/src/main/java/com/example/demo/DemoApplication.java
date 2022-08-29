@@ -26,10 +26,10 @@ public class DemoApplication {
 	}
 	String data = new String();
 	@GetMapping("/readData")
-	public void readFile()
+	public String readFile(String filename)
 	{	
 	try {
-		String filename ="input.txt";
+		//String filename ="input.txt";
 	      File myObj = new File(filename);
 	      Scanner myReader = new Scanner(myObj);
 	      while (myReader.hasNextLine()) {
@@ -37,7 +37,7 @@ public class DemoApplication {
 	       if(data.length()<=0) 
 	    	   {data=data1;}
 	       else     {data = data.concat("\n"+ data1);}	
-	       System.out.println(data);
+	       //System.out.println(data);
 	      }
 	     
 	      myReader.close();
@@ -45,29 +45,30 @@ public class DemoApplication {
 	      System.out.println("An error occurred.");
 	      e.printStackTrace();
 	    }
+	return data;
 	}
 	@GetMapping("/convert")
-	public void convert()
+	public String convert(String filename)
 	{
 	    System.out.println("reading from file.");
-		readFile();
+		readFile(filename);
 		if(data == null)
 		{
 		      System.out.println("An error occurred.");
-			return;
+			return "An error occurred.";
 		}
-	      System.out.println("parsing");
+	     // System.out.println("parsing");
 		int count = data.length();
 		if(count<=0) 
 			{
 			System.out.println("data empty"); 
-			return;
+			return "data empty";
 			}
 		StringBuilder extracted = new StringBuilder();
 		int flagAppend = 0;
 		for(int i =0;i<count;i++)
 		{
-			System.out.print(data.charAt(i));
+			//System.out.print(data.charAt(i));
 			char c = data.charAt(i);
 			switch(c)
 			{
@@ -86,12 +87,13 @@ public class DemoApplication {
 			}
 			if(flagAppend == 0)
 			{
-				System.out.println("new line");
-				System.out.println(extracted.toString());
+				//System.out.println("new line");
+				//System.out.println(extracted.toString());
 				mapping(extracted.toString());
 				extracted= new StringBuilder();
 			}
 		}
+		return data;
 		//print all MX1 values.
 		//PmtId_InstrId,PmtTpInf_LclInstrm_Prtry,IntrBkSttlmAmt,Dbtr_Nm,Dbtr_PstlAdr_AdrLine,DbtrAcct_Id_Othr_Id;
 		//String Cdtr_Nm, CdtrAcct_Id_Othr_Id;
@@ -384,8 +386,8 @@ public class DemoApplication {
         transformer.transform(source, result);
         
         // Output to console for testing
-        StreamResult consoleResult = new StreamResult(System.out);
-        transformer.transform(source, consoleResult);
+       // StreamResult consoleResult = new StreamResult(System.out);
+       // transformer.transform(source, consoleResult);
         
 		}catch (Exception e) {
 	         e.printStackTrace();
@@ -393,9 +395,9 @@ public class DemoApplication {
 		
 	}	
 	@GetMapping("/validateAndWrite")
-	public void validateAndWrite()
+	public String validateAndWrite(String filename)
 	{
-		convert();
+		convert(filename);
 	      System.out.println("Validate and Write.");
 	      validations();
 		System.out.println("PmtId_InstrId : " + MX1.PmtId_InstrId );
@@ -407,5 +409,6 @@ public class DemoApplication {
 		System.out.println("Cdtr_Nm : " + MX1.Cdtr_Nm );
 		System.out.println("CdtrAcct_Id_Othr_Id : " + MX1.CdtrAcct_Id_Othr_Id );
 		WriteXML();
+		return filename+" is written into output.xml";
 	}
 }
